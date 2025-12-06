@@ -149,7 +149,7 @@ main {
     padding: 30px;
     margin-bottom: 30px;
     border-left: 5px solid var(--primary);
-    max-width: 1400px;
+    max-width: 100%;
     margin-left: auto;
     margin-right: auto;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -688,6 +688,14 @@ document.addEventListener('DOMContentLoaded', function() {
             return; 
         }
 
+// Validate EmpCode format (E followed by 4 digits)
+const empCodeRegex = /^(E|e)\d{4}$/;
+if (!empCodeRegex.test(empCode)) {
+    showMessage('Please enter a valid EmpCode in Submitter details should be like E5704.', 'error');
+    return;
+}
+
+
         // Validate email format
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
@@ -727,6 +735,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 inputs.forEach(input => input.style.borderColor=''); 
             }
             
+			
+			// Validate EmpCode format (E followed by 4 digits)
+			if (!/^(E|e)\d{4}$/.test(entry.empCode)) {
+				isValid = false;
+				// If you have an input field for empCode, highlight it in red
+				inputs[0].style.borderColor='var(--danger)'; 
+			}
+			
+			// Validate projectCode (index 2)
+			if (!/^(LS|DM|GC|CN)\d{5}$/.test(entry.projectCode)) {
+			isValid = false;
+			inputs[2].style.borderColor = 'var(--danger)';
+			}
+			
             // Validate hours range
             const hours = parseFloat(entry.hours);
             if (hours < 0.5 || hours > 12 || isNaN(hours)) { 
@@ -738,7 +760,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         if (!isValid) { 
-            showMessage('Please fill all required fields and ensure hours are between 0.5 and 12.', 'error'); 
+            showMessage('Please fill all required fields in the Details', 'error'); 
             return; 
         }
 
