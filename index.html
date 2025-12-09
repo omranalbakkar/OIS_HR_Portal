@@ -989,10 +989,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 entry.querySelector('.emp-code-input').style.borderColor = 'var(--danger)';
             }
             
-            if (inputs.projectCode && !/^(LS|DM|GC|CN)\d{5}$/.test(inputs.projectCode)) {
+         //   if (inputs.projectCode && !/^(LS|DM|GC|CN)\d{5}$/.test(inputs.projectCode)) {
+        //        isValid = false;
+         //       entry.querySelector('.project-code-input').style.borderColor = 'var(--danger)';
+         //   }
+
+            if (inputs.projectCode && !/^(?:\d{6}|[A-Z]{2}\d{5}|[A-Z]{2}\d{4}|[A-Z]\d{5}|[A-Z]\d{4}|[A-Z]{2}\d{5}-ST1)$/.test(inputs.projectCode)) {
                 isValid = false;
                 entry.querySelector('.project-code-input').style.borderColor = 'var(--danger)';
             }
+
             
             // Validate hours
             if (inputs.hours) {
@@ -1197,3 +1203,4 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 </body>
 </html>
+
