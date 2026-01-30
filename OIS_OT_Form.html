@@ -930,15 +930,24 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // Validate EmpCode format
-        const empCodeRegex = /^(E|e)\d{4}$/;
-        if (!empCodeRegex.test(empCode)) {
-            showMessage('Employee Code must be like E5704', 'error');
-            document.getElementById('empCode').style.borderColor = 'var(--danger)';
-            return;
-        } else {
-            document.getElementById('empCode').style.borderColor = '';
-        }
+   //     const empCodeRegex = /^(E|e)\d{4}$/;
+   //     if (!empCodeRegex.test(empCode)) {
+   //         showMessage('Employee Code must be like E5704', 'error');
+   //         document.getElementById('empCode').style.borderColor = 'var(--danger)';
+   //         return;
+   //     } else {
+   //         document.getElementById('empCode').style.borderColor = '';
+   //     }
 
+        const empCodeRegex = /^(?:[Ee]\d{4}|(?:TG|tg|Tg|tG)\d{6}|(?:L6|l6)\d{5})$/;
+if (!empCodeRegex.test(empCode)) {
+    showMessage('Employee Code must be like: E5704, e5704, TG123456, tg123456, Tg123456, tG123456, L612345, or l612345', 'error');
+    document.getElementById('empCode').style.borderColor = 'var(--danger)';
+    return;
+} else {
+    document.getElementById('empCode').style.borderColor = '';
+}
+        
         // Validate email
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
@@ -987,10 +996,15 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             // Validate formats
-            if (inputs.empCode && !/^(E|e)\d{4}$/.test(inputs.empCode)) {
-                isValid = false;
-                entry.querySelector('.emp-code-input').style.borderColor = 'var(--danger)';
-            }
+        //    if (inputs.empCode && !/^(E|e)\d{4}$/.test(inputs.empCode)) {
+        //        isValid = false;
+        //        entry.querySelector('.emp-code-input').style.borderColor = 'var(--danger)';
+        //    }
+if (inputs.empCode && !/^(?:[Ee]\d{4}|(?:TG|tg|Tg|tG)\d{6}|(?:L6|l6)\d{5})$/.test(inputs.empCode)) {
+    isValid = false;
+    entry.querySelector('.emp-code-input').style.borderColor = 'var(--danger)';
+}
+
             
          //   if (inputs.projectCode && !/^(LS|DM|GC|CN)\d{5}$/.test(inputs.projectCode)) {
         //        isValid = false;
@@ -1224,5 +1238,6 @@ if (inputs.date) {
 </script>
 </body>
 </html>
+
 
 
