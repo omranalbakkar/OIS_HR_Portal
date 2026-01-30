@@ -972,14 +972,26 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // Validate EmpCode format
-        const empCodeRegex = /^(E|e)\d{4}$/;
-        if (!empCodeRegex.test(empCode)) {
-            showMessage('Employee Code must be like E5704', 'error');
-            document.getElementById('empCode').style.borderColor = 'var(--danger)';
-            return;
-        } else {
-            document.getElementById('empCode').style.borderColor = '';
-        }
+    //    const empCodeRegex = /^(E|e)\d{4}$/;
+    //    if (!empCodeRegex.test(empCode)) {
+     //       showMessage('Employee Code must be like E5704', 'error');
+    //        document.getElementById('empCode').style.borderColor = 'var(--danger)';
+    //        return;
+    //    } else {
+    //        document.getElementById('empCode').style.borderColor = '';
+    //    }
+
+// Validate EmpCode format
+const empCodeRegex = /^(?:[Ee]\d{4}|(?:TG|tg|Tg|tG)\d{6}|(?:L6|l6)\d{5})$/;
+if (!empCodeRegex.test(empCode)) {
+    showMessage('Employee Code must be like: E5704, TG123456, or L612345 (case sensitive variations allowed)', 'error');
+    document.getElementById('empCode').style.borderColor = 'var(--danger)';
+    return;
+} else {
+    document.getElementById('empCode').style.borderColor = '';
+}
+
+        
 
         // Validate email
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -1047,10 +1059,16 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             // Validate formats
-            if (inputs.empCode && !/^(E|e)\d{4}$/.test(inputs.empCode)) {
-                isValid = false;
-                entry.querySelector('.emp-code-input').style.borderColor = 'var(--danger)';
-            }
+       //     if (inputs.empCode && !/^(E|e)\d{4}$/.test(inputs.empCode)) {
+       //         isValid = false;
+       //         entry.querySelector('.emp-code-input').style.borderColor = 'var(--danger)';
+       //     }
+
+            // Validate formats
+if (inputs.empCode && !/^(?:[Ee]\d{4}|(?:TG|tg|Tg|tG)\d{6}|(?:L6|l6)\d{5})$/.test(inputs.empCode)) {
+    isValid = false;
+    entry.querySelector('.emp-code-input').style.borderColor = 'var(--danger)';
+}
             
             // Validate project code
             if (inputs.projectCode && !/^(?:\d{6}|[A-Z]{2}\d{5}|[A-Z]{2}\d{4}|[A-Z]\d{5}|[A-Z]\d{4}|[A-Z]{2}\d{5}-ST1)$/.test(inputs.projectCode)) {
@@ -1280,4 +1298,5 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 </body>
+
 </html>
