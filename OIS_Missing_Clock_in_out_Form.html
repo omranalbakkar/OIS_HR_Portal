@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Attendance Correction Form</title>
-<link rel="shortcut icon" href="https://orientirrigation.com/wp-content/uploads/2020/02/favicon.ico" type="image/x-icon" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="shortcut icon" href="https://orientirrigation.com/wp-content/uploads/2020/02/favicon.ico " type="image/x-icon" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css ">
 <style>
 /* CSS Variables based on your theme */
 :root {
@@ -225,7 +225,7 @@ input:focus, select:focus, textarea:focus {
 select {
     cursor: pointer;
     appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23007A8E' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg ' width='16' height='16' fill='%23007A8E' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 14px center;
     background-size: 16px;
@@ -299,6 +299,29 @@ select {
 
 .entry-form .form-group.full-width {
     grid-column: span 1;
+}
+
+/* Conditional field styling */
+.to-time-group {
+    display: none;
+    animation: slideDown 0.3s ease;
+}
+
+.to-time-group.visible {
+    display: block;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        max-height: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        max-height: 100px;
+        transform: translateY(0);
+    }
 }
 
 /* Button Styles */
@@ -679,7 +702,7 @@ select {
 <header>
     <div class="header-content">
         <div class="logo-container">
-            <img src="https://orientirrigation.com/wp-content/uploads/2020/03/logo78.png" 
+            <img src="https://orientirrigation.com/wp-content/uploads/2020/03/logo78.png " 
                  alt="Orient Irrigation Logo" 
                  class="company-logo">
             <div class="header-text">
@@ -755,15 +778,20 @@ select {
                     </div>
                     <div class="form-group">
                         <label><i class="fas fa-sign-in-alt"></i> Type (IN/OUT) *</label>
-                        <select class="type-input" required>
+                        <select class="type-input" required onchange="handleTypeChange(this)">
                             <option value="">Select Type</option>
                             <option value="IN">IN (Clock In)</option>
                             <option value="OUT">OUT (Clock Out)</option>
+                            <option value="IN_OUT">IN & OUT (Both)</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label><i class="fas fa-clock"></i> Time *</label>
-                        <input type="time" class="time-input" required>
+                        <label><i class="fas fa-clock"></i> From Time *</label>
+                        <input type="time" class="time-input from-time-input" required>
+                    </div>
+                    <div class="form-group to-time-group">
+                        <label><i class="fas fa-clock"></i> To Time *</label>
+                        <input type="time" class="time-input to-time-input">
                     </div>
                     <div class="form-group">
                         <label><i class="fas fa-exclamation-circle"></i> Reason *</label>
@@ -780,7 +808,7 @@ select {
                         </select>
                     </div>
                     <div class="form-group full-width">
-                        <label><i class="fas fa-comment"></i> Additional Remarks</label>
+                        <label><i class="fas fa-comment"></i> Additional Remarks <span class="remarks-required" style="color: var(--danger); display: none;">*</span></label>
                         <textarea class="remarks-input" placeholder="Any additional details..." rows="3"></textarea>
                     </div>
                 </div>
@@ -817,6 +845,7 @@ select {
                     <li>Project Code: e.g. LS00001, GC00001, DM00001, CN00001 or 200101</li>
                     <li>Time: Use time picker or enter as HH:MM (24-hour format)</li>
                     <li>Reason: Choose from dropdown. If "Others" selected, additional remarks required</li>
+                    <li><strong>IN & OUT:</strong> When selecting "IN & OUT", both From/To times are required and Remarks become mandatory</li>
                 </ul>
             </li>
             <li><strong>Submit</strong> for HR review</li>
@@ -850,9 +879,47 @@ document.addEventListener('DOMContentLoaded', function() {
     firstEntry.querySelector('.date-input').value = today;
     
     // Your deployed URL for Missing Clock In/Out
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby-TXU2Xnirv5Vhotfv1GYU8eGTnCVfVfAwVGYQjYmh2JJt2U8mZGsb3sqARIHqBCmMdA/exec"; // Replace with your deployment URL
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby-TXU2Xnirv5Vhotfv1GYU8eGTnCVfVfAwVGYQjYmh2JJt2U8mZGsb3sqARIHqBCmMdA/exec "; // Replace with your deployment URL
     
     let entryCounter = 1;
+
+    // Handle Type Change - Show/Hide To Time and make Remarks mandatory
+    window.handleTypeChange = function(selectElement) {
+        const entryCard = selectElement.closest('.entry-card');
+        const toTimeGroup = entryCard.querySelector('.to-time-group');
+        const toTimeInput = entryCard.querySelector('.to-time-input');
+        const remarksLabel = entryCard.querySelector('.remarks-required');
+        const remarksInput = entryCard.querySelector('.remarks-input');
+        const fromTimeLabel = entryCard.querySelector('.from-time-input').closest('.form-group').querySelector('label');
+        
+        if (selectElement.value === 'IN_OUT') {
+            // Show To Time field
+            toTimeGroup.classList.add('visible');
+            toTimeInput.required = true;
+            
+            // Make Remarks mandatory
+            remarksLabel.style.display = 'inline';
+            remarksInput.required = true;
+            
+            // Change label from "Time" to "From Time"
+            fromTimeLabel.innerHTML = '<i class="fas fa-clock"></i> From Time *';
+        } else {
+            // Hide To Time field
+            toTimeGroup.classList.remove('visible');
+            toTimeInput.required = false;
+            toTimeInput.value = ''; // Clear value
+            
+            // Remove mandatory from Remarks (unless Others is selected)
+            const reasonSelect = entryCard.querySelector('.reason-input');
+            if (reasonSelect.value !== 'Others') {
+                remarksLabel.style.display = 'none';
+                remarksInput.required = false;
+            }
+            
+            // Change label back to "Time"
+            fromTimeLabel.innerHTML = '<i class="fas fa-clock"></i> Time *';
+        }
+    };
 
     // Add new entry
     document.getElementById('addRowBtn').addEventListener('click', function() {
@@ -890,15 +957,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
                 <div class="form-group">
                     <label><i class="fas fa-sign-in-alt"></i> Type (IN/OUT) *</label>
-                    <select class="type-input" required>
+                    <select class="type-input" required onchange="handleTypeChange(this)">
                         <option value="">Select Type</option>
                         <option value="IN">IN (Clock In)</option>
                         <option value="OUT">OUT (Clock Out)</option>
+                        <option value="IN_OUT">IN & OUT (Both)</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label><i class="fas fa-clock"></i> Time *</label>
-                    <input type="time" class="time-input" required>
+                    <label><i class="fas fa-clock"></i> From Time *</label>
+                    <input type="time" class="time-input from-time-input" required>
+                </div>
+                <div class="form-group to-time-group">
+                    <label><i class="fas fa-clock"></i> To Time *</label>
+                    <input type="time" class="time-input to-time-input">
                 </div>
                 <div class="form-group">
                     <label><i class="fas fa-exclamation-circle"></i> Reason *</label>
@@ -915,7 +987,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     </select>
                 </div>
                 <div class="form-group full-width">
-                    <label><i class="fas fa-comment"></i> Additional Remarks</label>
+                    <label><i class="fas fa-comment"></i> Additional Remarks <span class="remarks-required" style="color: var(--danger); display: none;">*</span></label>
                     <textarea class="remarks-input" placeholder="Any additional details..." rows="3"></textarea>
                 </div>
             </div>
@@ -972,26 +1044,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // Validate EmpCode format
-    //    const empCodeRegex = /^(E|e)\d{4}$/;
-    //    if (!empCodeRegex.test(empCode)) {
-     //       showMessage('Employee Code must be like E5704', 'error');
-    //        document.getElementById('empCode').style.borderColor = 'var(--danger)';
-    //        return;
-    //    } else {
-    //        document.getElementById('empCode').style.borderColor = '';
-    //    }
-
-// Validate EmpCode format
-const empCodeRegex = /^(?:[Ee]\d{4}|(?:TG|tg|Tg|tG)\d{6}|(?:L6|l6)\d{5})$/;
-if (!empCodeRegex.test(empCode)) {
-    showMessage('Employee Code must be like: E5704, TG123456, or L612345 (case sensitive variations allowed)', 'error');
-    document.getElementById('empCode').style.borderColor = 'var(--danger)';
-    return;
-} else {
-    document.getElementById('empCode').style.borderColor = '';
-}
-
-        
+        const empCodeRegex = /^(?:[Ee]\d{4}|(?:TG|tg|Tg|tG)\d{6}|(?:L6|l6)\d{5})$/;
+        if (!empCodeRegex.test(empCode)) {
+            showMessage('Employee Code must be like: E5704, TG123456, or L612345 (case sensitive variations allowed)', 'error');
+            document.getElementById('empCode').style.borderColor = 'var(--danger)';
+            return;
+        } else {
+            document.getElementById('empCode').style.borderColor = '';
+        }
 
         // Validate email
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -1014,16 +1074,28 @@ if (!empCodeRegex.test(empCode)) {
         let isValid = true;
 
         entries.forEach((entry, index) => {
-            const timeValue = entry.querySelector('.time-input').value;
+            const typeValue = entry.querySelector('.type-input').value;
+            const fromTimeValue = entry.querySelector('.from-time-input').value;
+            const toTimeValue = entry.querySelector('.to-time-input').value;
             
             // Convert 24-hour time to 12-hour format for display
-            let displayTime = '';
-            if (timeValue) {
-                const [hours, minutes] = timeValue.split(':');
+            let displayFromTime = '';
+            let displayToTime = '';
+            
+            if (fromTimeValue) {
+                const [hours, minutes] = fromTimeValue.split(':');
                 const hour = parseInt(hours);
                 const period = hour >= 12 ? 'PM' : 'AM';
                 const displayHour = hour % 12 || 12;
-                displayTime = `${displayHour}:${minutes} ${period}`;
+                displayFromTime = `${displayHour}:${minutes} ${period}`;
+            }
+            
+            if (toTimeValue) {
+                const [hours, minutes] = toTimeValue.split(':');
+                const hour = parseInt(hours);
+                const period = hour >= 12 ? 'PM' : 'AM';
+                const displayHour = hour % 12 || 12;
+                displayToTime = `${displayHour}:${minutes} ${period}`;
             }
             
             const inputs = {
@@ -1032,8 +1104,10 @@ if (!empCodeRegex.test(empCode)) {
                 projectCode: entry.querySelector('.project-code-input').value.trim(),
                 projectName: entry.querySelector('.project-name-input').value.trim(),
                 date: entry.querySelector('.date-input').value,
-                type: entry.querySelector('.type-input').value,
-                time: displayTime, // This will be stored as "8:30 AM" format
+                type: typeValue,
+                fromTime: displayFromTime,
+                toTime: displayToTime,
+                time: typeValue === 'IN_OUT' ? `${displayFromTime} - ${displayToTime}` : displayFromTime,
                 reason: entry.querySelector('.reason-input').value,
                 remarks: entry.querySelector('.remarks-input').value.trim()
             };
@@ -1043,11 +1117,13 @@ if (!empCodeRegex.test(empCode)) {
                 input.style.borderColor = '';
             });
             
-            // Validate required fields
-            const requiredFields = [
-                inputs.empCode, inputs.empName, inputs.projectCode, 
-                inputs.date, inputs.type, inputs.reason, timeValue
-            ];
+            // Validate required fields based on type
+            let requiredFields = [inputs.empCode, inputs.empName, inputs.projectCode, inputs.date, inputs.type, inputs.reason, fromTimeValue];
+            
+            // If IN_OUT selected, To Time is also required
+            if (typeValue === 'IN_OUT') {
+                requiredFields.push(toTimeValue);
+            }
             
             if (requiredFields.some(field => !field)) {
                 isValid = false;
@@ -1059,16 +1135,10 @@ if (!empCodeRegex.test(empCode)) {
             }
             
             // Validate formats
-       //     if (inputs.empCode && !/^(E|e)\d{4}$/.test(inputs.empCode)) {
-       //         isValid = false;
-       //         entry.querySelector('.emp-code-input').style.borderColor = 'var(--danger)';
-       //     }
-
-            // Validate formats
-if (inputs.empCode && !/^(?:[Ee]\d{4}|(?:TG|tg|Tg|tG)\d{6}|(?:L6|l6)\d{5})$/.test(inputs.empCode)) {
-    isValid = false;
-    entry.querySelector('.emp-code-input').style.borderColor = 'var(--danger)';
-}
+            if (inputs.empCode && !/^(?:[Ee]\d{4}|(?:TG|tg|Tg|tG)\d{6}|(?:L6|l6)\d{5})$/.test(inputs.empCode)) {
+                isValid = false;
+                entry.querySelector('.emp-code-input').style.borderColor = 'var(--danger)';
+            }
             
             // Validate project code
             if (inputs.projectCode && !/^(?:\d{6}|[A-Z]{2}\d{5}|[A-Z]{2}\d{4}|[A-Z]\d{5}|[A-Z]\d{4}|[A-Z]{2}\d{5}-ST1)$/.test(inputs.projectCode)) {
@@ -1083,11 +1153,17 @@ if (inputs.empCode && !/^(?:[Ee]\d{4}|(?:TG|tg|Tg|tG)\d{6}|(?:L6|l6)\d{5})$/.tes
                 entry.querySelector('.remarks-input').required = true;
             }
             
+            // Validate if IN_OUT is selected, remarks are required
+            if (typeValue === 'IN_OUT' && !inputs.remarks) {
+                isValid = false;
+                entry.querySelector('.remarks-input').style.borderColor = 'var(--danger)';
+            }
+            
             entryData.push(inputs);
         });
 
         if (!isValid) { 
-            showMessage('Please check all fields and fix errors.', 'error'); 
+            showMessage('Please check all fields and fix errors. Remarks are mandatory for IN & OUT entries.', 'error'); 
             return; 
         }
 
@@ -1220,15 +1296,20 @@ if (inputs.empCode && !/^(?:[Ee]\d{4}|(?:TG|tg|Tg|tG)\d{6}|(?:L6|l6)\d{5})$/.tes
                         </div>
                         <div class="form-group">
                             <label><i class="fas fa-sign-in-alt"></i> Type (IN/OUT) *</label>
-                            <select class="type-input" required>
+                            <select class="type-input" required onchange="handleTypeChange(this)">
                                 <option value="">Select Type</option>
                                 <option value="IN">IN (Clock In)</option>
                                 <option value="OUT">OUT (Clock Out)</option>
+                                <option value="IN_OUT">IN & OUT (Both)</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label><i class="fas fa-clock"></i> Time *</label>
-                            <input type="time" class="time-input" required>
+                            <label><i class="fas fa-clock"></i> From Time *</label>
+                            <input type="time" class="time-input from-time-input" required>
+                        </div>
+                        <div class="form-group to-time-group">
+                            <label><i class="fas fa-clock"></i> To Time *</label>
+                            <input type="time" class="time-input to-time-input">
                         </div>
                         <div class="form-group">
                             <label><i class="fas fa-exclamation-circle"></i> Reason *</label>
@@ -1245,7 +1326,7 @@ if (inputs.empCode && !/^(?:[Ee]\d{4}|(?:TG|tg|Tg|tG)\d{6}|(?:L6|l6)\d{5})$/.tes
                             </select>
                         </div>
                         <div class="form-group full-width">
-                            <label><i class="fas fa-comment"></i> Additional Remarks</label>
+                            <label><i class="fas fa-comment"></i> Additional Remarks <span class="remarks-required" style="color: var(--danger); display: none;">*</span></label>
                             <textarea class="remarks-input" placeholder="Any additional details..." rows="3"></textarea>
                         </div>
                     </div>
@@ -1300,4 +1381,3 @@ if (inputs.empCode && !/^(?:[Ee]\d{4}|(?:TG|tg|Tg|tG)\d{6}|(?:L6|l6)\d{5})$/.tes
 </body>
 
 </html>
-
