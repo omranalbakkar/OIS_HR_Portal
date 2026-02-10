@@ -1105,9 +1105,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 projectName: entry.querySelector('.project-name-input').value.trim(),
                 date: entry.querySelector('.date-input').value,
                 type: typeValue,
+                time: typeValue === 'IN_OUT' ? `${displayFromTime} - ${displayToTime}` : displayFromTime,
                 fromTime: displayFromTime,
                 toTime: displayToTime,
-                time: typeValue === 'IN_OUT' ? `${displayFromTime} - ${displayToTime}` : displayFromTime,
                 reason: entry.querySelector('.reason-input').value,
                 remarks: entry.querySelector('.remarks-input').value.trim()
             };
